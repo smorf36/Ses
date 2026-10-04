@@ -3,44 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Canlı Rezonans ve Tıkanıklık Testi</title>
+    <title>Gerçek Rezonans Testi (Sesten Bağımsız)</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #1e1e24; color: #fff; display: flex; flex-direction: column; align-items: center; padding: 20px; margin: 0; }
-        .container { background: #2b2b36; padding: 30px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); max-width: 600px; width: 100%; text-align: center; }
-        h2 { margin-top: 0; color: #4dabf7; }
-        .btn { background: #4dabf7; color: #1e1e24; border: none; padding: 15px 24px; border-radius: 8px; cursor: pointer; font-size: 18px; font-weight: bold; width: 100%; transition: 0.3s; }
-        .btn:hover { background: #3bc9db; }
-        .btn-stop { background: #fa5252; color: white; display: none; }
-        .btn-stop:hover { background: #e03131; }
-        canvas { width: 100%; height: 150px; background: #151519; border-radius: 8px; margin-top: 20px; border: 1px solid #333; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0f172a; color: #f8fafc; display: flex; flex-direction: column; align-items: center; padding: 20px; margin: 0; }
+        .container { background: #1e293b; padding: 30px; border-radius: 12px; max-width: 600px; width: 100%; text-align: center; border: 1px solid #334155; }
+        h2 { margin-top: 0; color: #38bdf8; }
+        .btn { background: #38bdf8; color: #0f172a; border: none; padding: 15px 24px; border-radius: 8px; cursor: pointer; font-size: 18px; font-weight: bold; width: 100%; transition: 0.2s; margin-bottom: 15px;}
+        .btn:hover { background: #0284c7; }
+        .btn-stop { background: #ef4444; color: white; display: none; }
         
-        .live-panel { margin-top: 30px; padding: 20px; background: #151519; border-radius: 8px; border: 1px solid #444; }
-        .score-title { font-size: 20px; margin-bottom: 15px; color: #ced4da; }
-        .score-number { font-size: 48px; font-weight: bold; color: #4dabf7; margin: 10px 0; }
+        .gauge-container { margin-top: 30px; position: relative; width: 100%; height: 40px; background: #334155; border-radius: 20px; overflow: hidden; border: 2px solid #475569; }
         
-        .progress-bg { width: 100%; background-color: #333; border-radius: 10px; height: 30px; overflow: hidden; position: relative; }
-        .progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, #4dabf7, #fa5252); transition: width 0.1s ease-out; }
+        /* Sadece tınıyı gösteren çubuk */
+        .gauge-bar { height: 100%; width: 50%; background: linear-gradient(90deg, #10b981, #f59e0b, #ef4444); transition: width 0.1s linear; border-radius: 20px; }
+        
+        .labels { display: flex; justify-content: space-between; margin-top: 8px; font-size: 13px; color: #94a3b8; font-weight: bold; }
+        
+        .debug-panel { margin-top: 25px; padding: 15px; background: #0f172a; border-radius: 8px; font-size: 13px; color: #64748b; text-align: left;}
+        #volumeIndicator { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: red; margin-right: 5px; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Canlı Burun Tıkanıklığı Testi</h2>
-        <p style="color: #adb5bd; font-size: 15px;">
-            Mikrofonu açın ve <strong>"Mmmmmmmmm"</strong> veya <strong>"Nnnnnnnn"</strong> diyerek sesi uzatın. Sesi uzatırken <strong>burnunuzu parmaklarınızla sıkıp bırakın.</strong> Çubuğun anında fırladığını göreceksiniz.
+        <h2>Gerçek Burun Rezonans Testi</h2>
+        <p style="color: #cbd5e1; font-size: 15px;">
+            Ağzınız açık şekilde <strong>"İiiiiiiiii"</strong> deyin. İsterseniz fısıldayın, isterseniz bağırın. İbre sadece burnunuzu kapattığınızda sağa (Kırmızıya) kaymalıdır.
         </p>
         
-        <button id="startBtn" class="btn">🎤 Mikrofonu Aç ve Teste Başla</button>
-        <button id="stopBtn" class="btn btn-stop">⏹️ Testi Durdur</button>
-        
-        <canvas id="visualizer"></canvas>
+        <button id="startBtn" class="btn">🎤 Testi Başlat</button>
+        <button id="stopBtn" class="btn btn-stop">⏹️ Durdur</button>
 
-        <div class="live-panel">
-            <div class="score-title">Anlık Tıkanıklık / Boğukluk Oranı</div>
-            <div class="score-number" id="scoreText">%0</div>
-            <div class="progress-bg">
-                <div class="progress-bar" id="scoreBar"></div>
+        <div class="gauge-container">
+            <div class="gauge-bar" id="resonanceBar"></div>
+        </div>
+        <div class="labels">
+            <span>🟢 Açık Ses (Normal)</span>
+            <span>🔴 Boğuk/Tıkalı (Nazal)</span>
+        </div>
+
+        <div class="debug-panel">
+            <div style="margin-bottom: 5px;">
+                <span id="volumeIndicator"></span> <span id="volText">Ses Bekleniyor... (Fısıldasanız bile algılar)</span>
             </div>
-            <p id="statusText" style="margin-top: 15px; font-weight: bold; color: #adb5bd;">Ses bekleniyor...</p>
+            <div>Tıkanıklık Oranı: <strong id="scoreText" style="color: #f8fafc;">%0</strong></div>
         </div>
     </div>
 
@@ -48,14 +53,10 @@
         let audioContext, analyser, microphone, animationId;
         const startBtn = document.getElementById('startBtn');
         const stopBtn = document.getElementById('stopBtn');
-        const canvas = document.getElementById('visualizer');
-        const canvasCtx = canvas.getContext('2d');
+        const resonanceBar = document.getElementById('resonanceBar');
         const scoreText = document.getElementById('scoreText');
-        const scoreBar = document.getElementById('scoreBar');
-        const statusText = document.getElementById('statusText');
-
-        canvas.width = canvas.clientWidth; 
-        canvas.height = 150;
+        const volumeIndicator = document.getElementById('volumeIndicator');
+        const volText = document.getElementById('volText');
 
         startBtn.addEventListener('click', async () => {
             try {
@@ -79,65 +80,59 @@
                     animationId = requestAnimationFrame(analyzeLive);
                     analyser.getByteFrequencyData(dataArray);
 
-                    // Ekranı temizle (Ses Dalgalarını Çizmek İçin)
-                    canvasCtx.fillStyle = '#151519';
-                    canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
-
-                    let lowEnergy = 0, lowCount = 0;
-                    let highEnergy = 0, highCount = 0;
-                    const barWidth = (canvas.width / bufferLength) * 2.5;
-                    let x = 0;
+                    let lowEnergy = 0;
+                    let highEnergy = 0;
+                    let totalVolume = 0;
 
                     for (let i = 0; i < bufferLength; i++) {
                         let barHeight = dataArray[i];
                         let freq = i * audioContext.sampleRate / analyser.fftSize;
 
-                        // Ses dalgalarını ekrana çiz
-                        canvasCtx.fillStyle = `rgb(${barHeight + 50}, 150, 250)`;
-                        canvasCtx.fillRect(x, canvas.height - (barHeight / 2), barWidth, barHeight / 2);
-                        x += barWidth + 1;
+                        totalVolume += barHeight;
 
-                        // Kalın ses (Burun tıkalıyken artan uğultu frekansı)
-                        if (freq > 80 && freq < 400) {
-                            lowEnergy += barHeight;
-                            lowCount++;
-                        }
-                        // İnce ses (Burun tıkalıyken tamamen kaybolan hava frekansı)
-                        if (freq > 1200 && freq < 4000) {
-                            highEnergy += barHeight;
-                            highCount++;
-                        }
+                        // Kalın ve ince frekansları topla
+                        if (freq > 100 && freq < 600) lowEnergy += barHeight;
+                        if (freq > 1500 && freq < 4000) highEnergy += barHeight;
                     }
 
-                    // Ortalamaları al
-                    let avgLow = lowCount > 0 ? lowEnergy / lowCount : 0;
-                    let avgHigh = highCount > 0 ? highEnergy / highCount : 0;
-                    let totalEnergy = avgLow + avgHigh;
+                    let avgVol = totalVolume / bufferLength;
 
-                    // Eğer ortam çok sessizse skoru 0'da tut (arka plan gürültüsünü engellemek için)
-                    if (totalEnergy < 15) {
-                        updateUI(0, "Ses bekleniyor...");
+                    // Ses var mı yok mu kontrolü (Sessizlikte ibre oynamasın)
+                    if (avgVol < 5) {
+                        volumeIndicator.style.background = "red";
+                        volText.innerText = "Ses bekleniyor...";
+                        resonanceBar.style.width = "0%";
+                        scoreText.innerText = "%0";
                         return;
                     }
 
-                    // Boğukluk Formülü: Kalın sesin toplam sese oranı (0.0 ile 1.0 arası)
-                    let ratio = avgLow / totalEnergy; 
+                    volumeIndicator.style.background = "lime";
+                    volText.innerText = "Ses Algılanıyor (Şiddetten bağımsız ölçüm yapılıyor)";
 
-                    // Oranı %0 ile %100 arasına matematiksel olarak yay (0.55 altı normal, 0.85 üstü tam tıkalı)
-                    let currentScore = Math.round((ratio - 0.55) * 333); 
+                    // İŞTE SİHİRLİ FORMÜL: Ses şiddetini (Volume) formülden çıkarıyoruz!
+                    // Sadece düşük ve yüksek frekansların birbirine oranına bakıyoruz.
+                    // Yüksek sesle de bağırsan, bu oran (yüzde) sabit kalır.
+                    let totalEnergyToCompare = lowEnergy + highEnergy;
                     
-                    if (currentScore < 0) currentScore = 0;
-                    if (currentScore > 100) currentScore = 100;
+                    if (totalEnergyToCompare === 0) return;
 
-                    let status = "Normal Rezonans";
-                    if (currentScore > 75) status = "⚠️️ Yüksek Tıkanıklık (Boğuk Ses)";
-                    else if (currentScore > 40) status = "Hafif Tıkanıklık";
+                    // Kalın frekansların toplam sese yüzdesi (0 ile 100 arası)
+                    let bassPercentage = (lowEnergy / totalEnergyToCompare) * 100;
 
-                    updateUI(currentScore, status);
+                    // Normal bir "İiiiii" sesinde kalınlık genelde %40-%65 arasıdır.
+                    // Burun kapanınca bu oran %80-%95'lere fırlar.
+                    // Kullanıcı için bunu 0-100 barına uyduruyoruz:
+                    let displayScore = Math.round((bassPercentage - 50) * 2.5);
+
+                    if (displayScore < 0) displayScore = 0;
+                    if (displayScore > 100) displayScore = 100;
+
+                    resonanceBar.style.width = displayScore + '%';
+                    scoreText.innerText = `%${displayScore}`;
                 }
                 analyzeLive();
             } catch (err) {
-                alert('Mikrofon erişimine izin vermeniz gerekiyor.');
+                alert('Mikrofon izni verilmedi!');
             }
         });
 
@@ -146,22 +141,10 @@
             if (audioContext && audioContext.state !== 'closed') audioContext.close();
             startBtn.style.display = 'block';
             stopBtn.style.display = 'none';
-            updateUI(0, "Test durduruldu.");
+            volumeIndicator.style.background = "red";
+            volText.innerText = "Test Durduruldu.";
+            resonanceBar.style.width = "0%";
         });
-
-        function updateUI(score, text) {
-            scoreText.innerText = `%${score}`;
-            scoreBar.style.width = `${score}%`;
-            statusText.innerText = text;
-
-            if (score > 75) {
-                scoreText.style.color = '#fa5252'; // Kırmızı
-            } else if (score > 40) {
-                scoreText.style.color = '#fcc419'; // Sarı
-            } else {
-                scoreText.style.color = '#4dabf7'; // Mavi
-            }
-        }
     </script>
 </body>
 </html>
