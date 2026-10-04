@@ -3,132 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ses Rezonans ve Tıkanıklık Analizörü</title>
+    <title>Gelişmiş Ses Rezonans Analizörü</title>
     <style>
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background-color: #f0f2f5; 
-            color: #1c1e21; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            padding: 20px; 
-            margin: 0;
-        }
-        .container { 
-            background: white; 
-            padding: 30px; 
-            border-radius: 12px; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05); 
-            max-width: 600px; 
-            width: 100%; 
-            text-align: center; 
-        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; color: #1c1e21; display: flex; flex-direction: column; align-items: center; padding: 20px; margin: 0; }
+        .container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); max-width: 600px; width: 100%; text-align: center; }
         h2 { margin-top: 0; color: #2c3e50; }
-        .medical-warning { 
-            color: #856404; 
-            background-color: #fff3cd; 
-            padding: 15px; 
-            border-radius: 8px; 
-            font-size: 14px; 
-            margin-bottom: 25px; 
-            text-align: left;
-            border-left: 4px solid #ffeeba;
-        }
-        .btn { 
-            background: #0066cc; 
-            color: white; 
-            border: none; 
-            padding: 12px 24px; 
-            border-radius: 6px; 
-            cursor: pointer; 
-            font-size: 16px; 
-            font-weight: 600;
-            transition: background 0.2s;
-            margin-bottom: 10px;
-        }
+        .btn { background: #0066cc; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: 600; margin-bottom: 10px; width: 100%; }
         .btn:hover { background: #0052a3; }
         .btn-stop { background: #dc3545; display: none; }
-        .btn-stop:hover { background: #c82333; }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        .btn:disabled:hover { background: #0066cc; }
-        .error-box {
-            display: none;
-            color: #842029;
-            background-color: #f8d7da;
-            border-left: 4px solid #dc3545;
-            padding: 15px;
-            border-radius: 8px;
-            font-size: 14px;
-            margin-bottom: 15px;
-            text-align: left;
-        }
-        canvas { 
-            width: 100%; 
-            height: 180px; 
-            background: #111; 
-            border-radius: 8px; 
-            margin-top: 20px; 
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
-        }
-        #results { 
-            margin-top: 25px; 
-            padding: 20px; 
-            background: #f8f9fa; 
-            border-radius: 8px; 
-            display: none; 
-            border: 1px solid #e9ecef;
-            text-align: left;
-        }
-        .score-bar-container {
-            width: 100%;
-            background-color: #ddd;
-            border-radius: 5px;
-            margin: 10px 0;
-        }
-        .score-bar {
-            height: 20px;
-            border-radius: 5px;
-            background-color: #28a745;
-            width: 0%;
-            transition: width 1s ease-in-out, background-color 1s;
-        }
+        canvas { width: 100%; height: 180px; background: #111; border-radius: 8px; margin-top: 20px; }
+        #results { margin-top: 25px; padding: 20px; background: #f8f9fa; border-radius: 8px; display: none; text-align: left; border: 1px solid #e9ecef; }
+        .score-bar-container { width: 100%; background-color: #ddd; border-radius: 5px; margin: 10px 0; }
+        .score-bar { height: 20px; border-radius: 5px; background-color: #28a745; width: 0%; transition: width 1s; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Ses Rezonans Analizörü</h2>
-        <div class="medical-warning">
-            <strong>⚠️ Önemli Uyarı:</strong> Bu araç, ses dalgalarınızdaki frekans dengesizliğini ölçen deneysel bir yazılımdır. Burnunuzun kırık olup olmadığını tıbbi olarak teşhis edemez. Fiziksel bir darbe aldıysanız derhal tıbbi yardım alın.
-        </div>
+        <h2>Gelişmiş Rezonans Analizi</h2>
+        <p><strong>Test Yöntemi:</strong> "Kayda Başla" butonuna basın. Burnunuzu tamamen kapatın ve 5 saniye boyunca kesintisiz <strong>"Mmmmmmm"</strong> veya <strong>"Nnnnnnn"</strong> deyin. Ardından analizi bitirin.</p>
         
-        <p><strong>Nasıl Kullanılır?</strong> "Kayda Başla" butonuna basın. Yaklaşık 5 saniye boyunca mikrofona "Mmmmmm" ve "Nnnnnn" seslerini çıkarın veya sürekli konuşun, ardından "Analizi Bitir"e basın.</p>
-
-        <div id="micError" class="error-box" role="alert"></div>
-
-        <button id="startBtn" class="btn">🎤 Kayda Başla ve Konuş</button>
-        <button id="stopBtn" class="btn btn-stop">⏹️ Analizi Bitir ve Sonucu Gör</button>
-
+        <button id="startBtn" class="btn">🎤 Kayda Başla</button>
+        <button id="stopBtn" class="btn btn-stop">⏹️ Analizi Bitir</button>
         <canvas id="visualizer"></canvas>
 
         <div id="results">
-            <h3 style="margin-top:0;">Analiz Sonucu</h3>
-            <p><strong>Hesaplanan Tıkanıklık (Hiponazalite) Oranı:</strong> <span id="scoreText">...</span></p>
-            <div class="score-bar-container">
-                <div id="scoreBar" class="score-bar"></div>
-            </div>
-            <p><strong>Durum Analizi:</strong> <span id="statusText">...</span></p>
+            <h3>Sonuç</h3>
+            <p><strong>Tıkanıklık Oranı:</strong> <span id="scoreText" style="font-weight:bold; font-size:1.2em;">...</span></p>
+            <div class="score-bar-container"><div id="scoreBar" class="score-bar"></div></div>
+            <p><strong>Analiz:</strong> <span id="statusText">...</span></p>
+            <p style="font-size: 12px; color: gray; margin-top:15px;">* Değerlendirme ham ses verisi üzerinden yapılır. Hassasiyet mikrofon kalitesine göre değişebilir. Tıbbi teşhis yerine geçmez.</p>
         </div>
     </div>
 
     <script>
-        let audioContext;
-        let analyser;
-        let microphone;
-        let mediaStream;
-        let animationId;
-        let lowFreqEnergyArr = [];
-        let highFreqEnergyArr = [];
+        let audioContext, analyser, microphone, animationId;
+        let lowFreqEnergyArr = [], highFreqEnergyArr = [];
         let isRecording = false;
 
         const startBtn = document.getElementById('startBtn');
@@ -138,172 +47,118 @@
         const resultsDiv = document.getElementById('results');
         const scoreBar = document.getElementById('scoreBar');
 
-        // Tuval (Canvas) boyutlarını ayarla
-        canvas.width = canvas.clientWidth;
-        canvas.height = 180;
-
-        const micError = document.getElementById('micError');
-        const micSupported = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
-
-        function showMicError(err) {
-            const name = (err && err.name) || err;
-            let msg;
-            if (name === 'insecure') {
-                msg = `Bu sayfa güvenli olmayan bir adresten (http:// veya IP adresi) açıldı. Tarayıcılar mikrofonu yalnızca HTTPS veya localhost üzerinde açar. Sayfayı https:// ile açın ya da sunucuya SSL sertifikası kurun.`;
-            } else if (name === 'unsupported') {
-                msg = `Bu tarayıcı mikrofon erişimini desteklemiyor. Chrome, Edge, Firefox veya Safari'nin güncel sürümünü kullanın (uygulama içi tarayıcılar çalışmayabilir).`;
-            } else if (name === 'NotAllowedError' || name === 'PermissionDeniedError' || name === 'SecurityError') {
-                msg = `Mikrofon izni verilmedi ya da engellenmiş. Adres çubuğundaki kilit simgesinden Mikrofon iznini "İzin ver" yapıp sayfayı yenileyin. Sayfa bir iframe içindeyse iframe'e allow="microphone" eklenmeli.`;
-            } else if (name === 'NotFoundError' || name === 'DevicesNotFoundError') {
-                msg = `Mikrofon bulunamadı. Bir mikrofon bağlı olduğundan emin olun.`;
-            } else if (name === 'NotReadableError' || name === 'TrackStartError' || name === 'AbortError') {
-                msg = `Mikrofon açılamadı. Başka bir uygulama kullanıyor olabilir; onu kapatıp tekrar deneyin.`;
-            } else {
-                msg = `Mikrofon başlatılamadı (${name}): ${(err && err.message) || ''}`;
-            }
-            micError.textContent = msg;
-            micError.style.display = 'block';
-        }
-
-        function releaseMic() {
-            if (mediaStream) {
-                mediaStream.getTracks().forEach(track => track.stop());
-                mediaStream = null;
-            }
-            if (audioContext && audioContext.state !== 'closed') {
-                audioContext.close();
-            }
-        }
-
-        if (!micSupported) {
-            showMicError(window.isSecureContext ? 'unsupported' : 'insecure');
-            startBtn.disabled = true;
-        }
+        canvas.width = canvas.clientWidth; canvas.height = 180;
 
         startBtn.addEventListener('click', async () => {
-            if (!micSupported) return;
-            micError.style.display = 'none';
-            startBtn.disabled = true;
             try {
-                // AudioContext'i tıklama anında oluştur (Safari/iOS için gerekli)
+                // Gürültü engelleme filtrelerini kapatarak mikrofonun ham (raw) sesini alıyoruz
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    audio: { 
+                        echoCancellation: false, 
+                        autoGainControl: false, 
+                        noiseSuppression: false 
+                    } 
+                });
+                
                 audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                audioContext.resume().catch(() => {});
-                // Mikrofon izni iste
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                mediaStream = stream;
-                await audioContext.resume();
                 analyser = audioContext.createAnalyser();
                 microphone = audioContext.createMediaStreamSource(stream);
                 microphone.connect(analyser);
-
-                analyser.fftSize = 2048;
+                analyser.fftSize = 1024;
+                
                 const bufferLength = analyser.frequencyBinCount;
                 const dataArray = new Uint8Array(bufferLength);
 
                 isRecording = true;
-                lowFreqEnergyArr = [];
-                highFreqEnergyArr = [];
+                lowFreqEnergyArr = []; highFreqEnergyArr = [];
 
                 startBtn.style.display = 'none';
-                stopBtn.style.display = 'inline-block';
+                stopBtn.style.display = 'block';
                 resultsDiv.style.display = 'none';
-                scoreBar.style.width = '0%';
 
                 function draw() {
                     if (!isRecording) return;
                     animationId = requestAnimationFrame(draw);
                     analyser.getByteFrequencyData(dataArray);
 
-                    // Arka planı temizle
-                    canvasCtx.fillStyle = 'rgb(17, 17, 17)';
+                    canvasCtx.fillStyle = '#111';
                     canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
 
+                    let lowEnergy = 0, highEnergy = 0;
                     const barWidth = (canvas.width / bufferLength) * 2.5;
                     let x = 0;
-
-                    let lowEnergy = 0;
-                    let highEnergy = 0;
 
                     for (let i = 0; i < bufferLength; i++) {
                         const barHeight = dataArray[i];
                         const freq = i * audioContext.sampleRate / analyser.fftSize;
 
-                        // Tıkanıklık, 500Hz altı frekansları hapsederken 1500Hz üstünü boğar
-                        if (freq > 80 && freq < 600) lowEnergy += dataArray[i];
-                        if (freq >= 1000 && freq < 3000) highEnergy += dataArray[i];
+                        // Daraltılmış ve daha hassas frekans aralıkları
+                        if (freq > 100 && freq < 400) lowEnergy += barHeight; // Burun kapalıyken burası patlama yapar
+                        if (freq > 1500 && freq < 4000) highEnergy += barHeight; // Burun kapalıyken burası tamamen sönümlenir
 
-                        // Renk geçişli ses dalgaları çizimi
-                        canvasCtx.fillStyle = `rgb(${barHeight + 50}, 100, 255)`;
+                        canvasCtx.fillStyle = `rgb(${barHeight + 100}, 50, 50)`;
                         canvasCtx.fillRect(x, canvas.height - (barHeight / 2), barWidth, barHeight / 2);
                         x += barWidth + 1;
                     }
-
+                    
                     lowFreqEnergyArr.push(lowEnergy);
                     highFreqEnergyArr.push(highEnergy);
                 }
                 draw();
             } catch (err) {
-                releaseMic();
-                showMicError(err);
-            } finally {
-                startBtn.disabled = false;
+                alert('Mikrofon erişim hatası. İzin verdiğinizden emin olun.');
             }
         });
 
         stopBtn.addEventListener('click', () => {
             isRecording = false;
             cancelAnimationFrame(animationId);
-            releaseMic();
+            if (audioContext.state !== 'closed') audioContext.close();
 
-            startBtn.style.display = 'inline-block';
+            startBtn.style.display = 'block';
             stopBtn.style.display = 'none';
-
             analyzeResonance();
         });
 
         function analyzeResonance() {
             if (lowFreqEnergyArr.length === 0) return;
 
-            // Ortalama enerjileri hesapla
             const avgLow = lowFreqEnergyArr.reduce((a, b) => a + b, 0) / lowFreqEnergyArr.length;
             const avgHigh = highFreqEnergyArr.reduce((a, b) => a + b, 0) / highFreqEnergyArr.length;
 
-            // Çok düşük ses engeli
-            if (avgLow < 500) {
-                document.getElementById('scoreText').innerText = "Yetersiz Veri";
-                document.getElementById('statusText').innerText = "Ses çok kısıktı. Lütfen mikrofona daha yakın konuşarak tekrar deneyin.";
-                scoreBar.style.width = '0%';
+            if (avgLow < 100) {
+                document.getElementById('scoreText').innerText = "Sessizlik";
+                document.getElementById('statusText').innerText = "Yeterli ses algılanmadı.";
                 resultsDiv.style.display = 'block';
                 return;
             }
 
-            // Rezonans Dengesizliği Formülü (Kalın frekansların ince frekanslara aşırı baskın olması tıkanıklık göstergesidir)
+            // Hassaslaştırılmış oranlama
             let ratio = avgLow / (avgHigh || 1);
             
-            // %0 ile %100 arası bir tıkanıklık skoru türetme
-            let impairmentPercentage = Math.round((ratio - 1) * 20);
+            // Oran bazlı tıkanıklık yüzdesi (Burnu kapalıyken ratio çok yükselir)
+            let impairmentPercentage = Math.round((ratio - 1.5) * 30);
+            
             if (impairmentPercentage < 0) impairmentPercentage = 0;
             if (impairmentPercentage > 100) impairmentPercentage = 100;
 
             let status = "";
-            let barColor = "#28a745"; // Yeşil
+            let barColor = "#28a745";
 
-            if (impairmentPercentage > 75) {
-                status = "Yüksek derecede Rezonans Bozukluğu (Hiponazalite). Sesinizin tiz frekansları ciddi şekilde boğulmuş. Burnunuzda şiddetli bir tıkanıklık, ödem veya hava geçişini engelleyen fiziksel bir travma (kırık, eğrilik) olabilir.";
-                barColor = "#dc3545"; // Kırmızı
-            } else if (impairmentPercentage > 40) {
-                status = "Orta düzeyde tıkanıklık belirtisi. Sesiniz 'burnu tıkalı' çıkıyor. Nezle, şişlik veya hafif bir hava yolu daralması mevcut olabilir.";
-                barColor = "#ffc107"; // Sarı
+            if (impairmentPercentage > 70) {
+                status = "Yüksek derecede tıkanıklık (Hiponazalite). Hava akışı ciddi şekilde kısıtlanmış görünüyor.";
+                barColor = "#dc3545";
+            } else if (impairmentPercentage > 35) {
+                status = "Orta düzeyde tıkanıklık/rezonans bozukluğu.";
+                barColor = "#ffc107";
             } else {
-                status = "Normal rezonans. Sesinizin frekans dengesi sağlıklı görünüyor ve ciddi bir tıkanıklık emaresi göstermiyor.";
+                status = "Normal rezonans. Tıkanıklık tespit edilmedi.";
             }
 
             document.getElementById('scoreText').innerText = `%${impairmentPercentage}`;
             document.getElementById('statusText').innerText = status;
-            
             scoreBar.style.width = `${impairmentPercentage}%`;
             scoreBar.style.backgroundColor = barColor;
-            
             resultsDiv.style.display = 'block';
         }
     </script>
